@@ -1,44 +1,35 @@
 package mumtaz.binar.dependencyinjectionlistnews.listnews.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import mumtaz.binar.dependencyinjectionlistnews.listnews.model.GetAllNewsResponseItem
-import mumtaz.binar.dependencyinjectionlistnews.listnews.network.ApiClient
+import mumtaz.binar.dependencyinjectionlistnews.listnews.network.ApiService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import javax.inject.Inject
 
-class ViewModelNews : ViewModel(){
+@HiltViewModel
+class ViewModelNews @Inject constructor(api : ApiService): ViewModel(){
 
-    lateinit var liveDataNews : MutableLiveData<List<GetAllNewsResponseItem>>
+    private var liveDataNews = MutableLiveData<List<GetAllNewsResponseItem>>()
+
+    val news : LiveData<List<GetAllNewsResponseItem>> = liveDataNews
 
     init {
-        liveDataNews = MutableLiveData()
+         viewModelScope.launch {
+             val datanews = api.getAllNews()
+             delay(2000)
+             liveDataNews.value = datanews
+         }
     }
 
-    fun getLiveDataObserver(): MutableLiveData<List<GetAllNewsResponseItem>> {
-        return liveDataNews
-    }
 
-    fun getApiNews(){
-       ApiClient.instance.getAllNews()
-            .enqueue(object : Callback<List<GetAllNewsResponseItem>> {
-                override fun onResponse(
-                    call: Call<List<GetAllNewsResponseItem>>,
-                    response: Response<List<GetAllNewsResponseItem>>
-                ) {
-                    if (response.isSuccessful) {
-                        liveDataNews.postValue(response.body())
-                    }else{
-                        liveDataNews.postValue(null)
-                    }
 
-                }
 
-                override fun onFailure(call: Call<List<GetAllNewsResponseItem>>, t: Throwable) {
-                    liveDataNews.postValue(null)
-                }
-
-            })
-    }
 }

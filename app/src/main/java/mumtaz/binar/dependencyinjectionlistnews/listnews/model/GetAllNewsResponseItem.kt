@@ -1,7 +1,10 @@
 package mumtaz.binar.dependencyinjectionlistnews.listnews.model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class GetAllNewsResponseItem(
     @SerializedName("author")
     val author: String,
@@ -15,4 +18,4 @@ data class GetAllNewsResponseItem(
     val image: String,
     @SerializedName("title")
     val title: String
-)
+) : Parcelable

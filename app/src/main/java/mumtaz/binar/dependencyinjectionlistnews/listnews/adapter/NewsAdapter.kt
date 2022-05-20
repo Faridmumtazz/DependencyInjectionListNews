@@ -10,7 +10,7 @@ import mumtaz.binar.dependencyinjectionlistnews.R
 import mumtaz.binar.dependencyinjectionlistnews.listnews.model.GetAllNewsResponse
 import mumtaz.binar.dependencyinjectionlistnews.listnews.model.GetAllNewsResponseItem
 
-class NewsAdapter(): RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
+class NewsAdapter(private var onclick : (GetAllNewsResponseItem)->Unit): RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
     private var dataNews : List<GetAllNewsResponseItem>? = null
 
@@ -34,6 +34,10 @@ class NewsAdapter(): RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
         holder.itemView.tv_tglnews.text = dataNews!![position].createdAt
         holder.itemView.tv_author.text = dataNews!![position].author
         Glide.with(holder.itemView.context).load(dataNews!![position].image).into(holder.itemView.img_news)
+
+        holder.itemView.card_news.setOnClickListener {
+            onclick(dataNews!![position])
+        }
     }
 
     override fun getItemCount(): Int {
